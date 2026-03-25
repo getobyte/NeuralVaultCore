@@ -1,0 +1,60 @@
+services:
+  mcp:
+    build: .
+    container_name: nvc-mcp
+    env_file: .env
+    environment:
+      - NVC_DB_PATH=/data/nvc.db
+    ports:
+      - "${NVC_PORT:-9998}:${NVC_PORT:-9998}"
+    volumes:
+      - nvc-data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:${NVC_PORT:-9998}/health"]
+      interval: 30s
+      timeout: 5s
+      start_period: 15s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: "1.0"
+
+  webui:
+    build: .
+    container_name: nvc-webui
+    command: python webui.py --host 0.0.0.0 --port 9999
+    env_file: .env
+    environment:
+      - NVC_DB_PATH=/data/nvc.db
+    ports:
+      - "${NVC_UI_PORT:-9999}:9999"
+    volumes:
+      - nvc-data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9999/health"]
+      interval: 30s
+      timeout: 5s
+      start_period: 10s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: "0.5"
+
+volumes:
+  nvc-data:

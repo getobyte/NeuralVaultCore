@@ -1,0 +1,59 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.pytest_tmp/
+.pytest_run_*/
+pytest-of-*/
+pytest-cache-files-*/
+*.egg-info/
+dist/
+build/
+*.egg
+.venv/
+venv/
+
+# Data
+data/
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+
+# Environment
+.env
+mcp_config.json
+
+# Node
+node_modules/
+NVC - BaseUI/node_modules/
+webui-dist/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Firecrawl
+.firecrawl/
+
+# Linter cache
+.ruff_cache/
+
+# Coverage
+.coverage
+htmlcov/
+
+# Type checker
+.mypy_cache/
+
+# Security
+*.pem

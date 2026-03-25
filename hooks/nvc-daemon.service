@@ -1,0 +1,13 @@
+[Unit]
+Description=NeuralVaultCore Daemon
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 nvc.py daemon start
+WorkingDirectory=/opt/neuralvaultcore
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
