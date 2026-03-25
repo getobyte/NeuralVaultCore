@@ -1,8 +1,11 @@
+================================================================================
 # NeuralVaultCore v1.0
-
+================================================================================
 > Infinite Long-Term Memory for AI Agents — local, private, low-token.
 
-NeuralVaultCore is an MCP memory server built for token efficiency. Any AI agent with MCP support (Claude Code, Cursor, OpenCode, Ollama) gets persistent memory across sessions. Single-user, local-first — your data never leaves your machine.
+NeuralVaultCore is an MCP memory server built for token efficiency. Any AI agent 
+with MCP support (Claude Code, Cursor, OpenCode, Ollama) gets persistent memory 
+across sessions. Single-user, local-first — your data never leaves your machine.
 
 **Author:** getobyte | **License:** MIT | **Python 3.10+** | **MCP Compliant**
 
@@ -10,200 +13,172 @@ NeuralVaultCore is an MCP memory server built for token efficiency. Any AI agent
 
 ## 🤖 Official AI Agent Skills (Ecosystem)
 
-An MCP server is only as good as the AI using it. To get the absolute best performance, zero context bloat, and perfect autonomy from your agents, we provide two official system prompts (skills):
+An MCP server is only as good as the AI using it. To get the absolute best 
+performance, zero context bloat, and perfect autonomy from your agents, we 
+provide two official system prompts (skills):
 
-* ⚡ **[NeuralVaultSkill](https://github.com/getobyte/NeuralVaultSkill)**: The "Daily Driver". An ultra-compact (~383 tokens) system prompt that teaches your agent how to autonomously save project context silently, use token-saving tools (`head_tail`, `keys_only`), and enforce strict namespace isolation (`project:<repo-name>`).
-* 🧹 **[NeuralVaultArchivist](https://github.com/getobyte/NeuralVaultArchivist)**: The "Maintenance Tool". An on-demand consolidation skill. Run this manually to safely merge overlapping memory fragments into compact Master Records without deleting any data.
+* ⚡ **[NeuralVaultSkill](https://github.com/getobyte/NeuralVaultSkill)**: 
+  The "Daily Driver". An ultra-compact (~383 tokens) system prompt that teaches 
+  your agent how to autonomously save project context silently, use token-saving 
+  tools (`head_tail`, `keys_only`), and enforce strict namespace isolation.
+
+* 🧹 **[NeuralVaultArchivist](https://github.com/getobyte/NeuralVaultArchivist)**: 
+  The "Maintenance Tool". An on-demand consolidation skill. Run this manually 
+  to safely merge overlapping memory fragments into compact Master Records 
+  without deleting any data.
 
 ---
 
 ## Why Low-Token Matters
 
-Every character an MCP tool returns consumes tokens from your AI agent's context window. Most memory servers waste tokens with emoji, markdown formatting, and full-content responses. NeuralVaultCore is designed from the ground up to minimize token usage.
+Every character an MCP tool returns consumes tokens from your AI agent's 
+context window. NeuralVaultCore is designed to minimize usage by up to 7x.
 
 ### Token Comparison: NeuralVaultCore vs Typical MCP Memory Server
 
 **Retrieving a memory (2KB content):**
-
-Typical server (~600 tokens):
-  Memory: Project Notes
-  Key: project_notes
-  Updated: 2026-03-25T10:30
-  <entire 2KB content dumped, no truncation>
-
-NeuralVaultCore (~250 tokens):
-  api,config | 2026-03-25T10:30
-
-  First 1000 chars of content here...
-  ...(truncated)...
-  Last 1000 chars here
+- Typical server (~600 tokens): Full content dump + heavy JSON metadata.
+- NeuralVaultCore (~250 tokens): Returns pipe-delimited Head/Tail views.
 
 **Listing 100 memories:**
+- Typical server (~5,000 tokens): All entries with emojis, titles, snippets.
+- NeuralVaultCore with keys_only (~500 tokens): Returns `key|namespace` only.
 
-Typical server (~5,000 tokens):
-  100 entries with emoji, full titles, snippets, no pagination
-
-NeuralVaultCore with keys_only (~500 tokens):
-  20/100 memories
-  auth-notes | project:myapp
-  db-schema | project:myapp
-  api-design | project:myapp
-  ... (paginated, 20 at a time)
+**Resuming a project (the most common operation):**
+- Typical server (~2,100 tokens): 2-3 separate tool calls (list + retrieve).
+- NeuralVaultCore: 1 call (~400 tokens) via `get_context`.
 
 ---
 
 ## Installation
 
 ### Option 1: Installer Wizard (Recommended)
-
 $ git clone https://github.com/getobyte/NeuralVaultCore.git
 $ cd NeuralVaultCore
 $ python install.py
 
-The wizard will:
-1. Create a virtual environment
-2. Install all dependencies
-3. Download the semantic search model (~80MB)
-4. Ask you to choose a deployment profile
-5. Generate `.env` with a secure API key
-6. Initialize the SQLite database
-7. Build the web dashboard (if Node.js is available)
-8. Optionally install shell auto-capture hooks
-9. Generate `mcp_config.json` ready to paste into your IDE
-
-For CI/automation, skip all prompts:
-$ python install.py --yes
+The wizard handles: venv, dependencies, search model, .env, DB init, 
+web dashboard build, and mcp_config.json generation.
+(Use --yes for headless/CI installation).
 
 ### Option 2: Manual Setup
-
-$ git clone https://github.com/getobyte/NeuralVaultCore.git
-$ cd NeuralVaultCore
-
-# Create virtual environment
 $ python -m venv venv
-$ source venv/bin/activate  # Linux/macOS
-# venv\Scripts\activate     # Windows
-
-# Install dependencies
+$ source venv/bin/activate (or venv\Scripts\activate on Windows)
 $ pip install -e ".[full]"
-
-# Initialize
 $ nvc init
-
-# Get your MCP config
 $ nvc print-config --client claude-code
 
 ### Option 3: Docker (Homelab / LAN Access)
+Use this to run NVC on a server/NAS and access it from your network.
 
-Use this when you want to run NVC on one machine (server, Raspberry Pi, homelab) and access it from other computers on your network.
-
-**Prerequisites:**
-- **Windows 11:** Install Docker Desktop with WSL 2 backend enabled.
-- **Linux:** Install Docker Engine + Docker Compose.
-- **macOS:** Install Docker Desktop.
-
-**Step 1 — Clone and configure:**
-$ git clone https://github.com/getobyte/NeuralVaultCore.git
-$ cd NeuralVaultCore
+Step 1 — Configure:
 $ cp .env.example .env
 
-**Step 2 — Generate an API key and edit `.env`:**
+Step 2 — Generate API Key:
 $ python -c "import secrets; print('nvc_' + secrets.token_hex(24))"
+(Paste key in .env at NVC_API_KEY and set NVC_PROFILE=remote-homelab)
 
-Open `.env` and set these three values:
-NVC_PROFILE=remote-homelab
-NVC_TRANSPORT=sse
-NVC_API_KEY=nvc_PASTE_YOUR_GENERATED_KEY_HERE
-
-**Step 3 — Start the containers:**
+Step 3 — Start:
 $ docker compose up -d
 
-This starts two services:
-- **MCP Server** on port `9998` — your AI agents connect here
-- **Web Dashboard** on port `9999` — manage memories from a browser
-
-**Step 4 — Find the server's IP address:**
-# Linux: ip addr | grep "inet " | grep -v 127.0.0.1
-# Windows: ipconfig | findstr "IPv4"
-# macOS: ifconfig | grep "inet " | grep -v 127.0.0.1
-
-**Step 5 — Access the Web Dashboard:**
-Open a browser on any computer/phone on your network and go to:
-http://<YOUR_SERVER_IP>:9999
+Step 4 — Find IP:
+Linux:   ip addr | grep "inet "
+Windows: ipconfig | findstr "IPv4" (Run in PowerShell)
 
 ---
 
 ## 🔗 Connecting to Your IDE
 
-### Local Install (Options 1 & 2)
-Copy the generated `mcp_config.json` into your IDE or run:
+### Local Install (Options 1 & 2):
 $ nvc print-config --client cursor
 $ nvc print-config --client claude-code
 
-### Remote/Docker (Option 3)
-Add this to your MCP config (e.g., `~/.claude.json`):
+### Remote/Docker (Option 3):
+Add to your MCP config:
 {
   "mcpServers": {
     "neural-vault-core": {
-      "url": "http://<YOUR_SERVER_IP>:9998/sse",
-      "headers": {
-        "Authorization": "Bearer nvc_PASTE_YOUR_KEY_HERE"
-      }
+      "url": "http://<SERVER_IP>:9998/sse",
+      "headers": { "Authorization": "Bearer nvc_YOUR_KEY" }
     }
   }
 }
 
 ---
 
-## Features
+## MCP Tools (The Core 9)
 
-### Core
-* **9 MCP Tools** — store, retrieve, search, list, get_context, delete, versions, restore, stats
-* **Low-token output** — compact pipe-delimited ASCII, zero emoji on MCP channel
-* **Token control params** — `keys_only`, `view` modes (head/tail/head_tail/full), `max_chars`
-* **Project continuity** — `_state` per namespace + `get_context` resumes work in one cheap call
-* **Namespaces** — organize memories by project, context, or category
-* **Auto-versioning** — every update saves the previous version (last 5 kept)
+1. store_memory    : Save/Update. Auto-versions (last 5 kept).
+2. retrieve_memory : Read. Supports view="head_tail" and max_chars.
+3. search_memories : Hybrid Search. 3+ words trigger semantic search.
+4. list_all_memories : Paginated directory. Use keys_only=True to save tokens.
+5. get_context     : Rapid resume. Loads _state + recent history in one call.
+6. delete_memory   : Permanent deletion of key and all versions.
+7. get_versions    : Audit version history.
+8. restore_version : Rollback to a previous state.
+9. get_stats       : Database and tool usage statistics.
 
-### Search
-* **Semantic search** — sentence-transformers (optional, CPU-only, all-MiniLM-L6-v2)
-* **Full-text search** — SQLite FTS5 with ranked results, LIKE fallback
-* **Hybrid** — 3+ word queries trigger semantic search, shorter queries use FTS5
+---
+
+## Web Dashboard (8 Views)
+
+Start: $ nvc dashboard (Default: http://localhost:9999)
+
+- Dashboard: Overview cards and activity stats.
+- Memories: Full table with advanced namespace filtering.
+- Calendar: Monthly contribution grid (click to expand).
+- Search: Dedicated semantic/FTS5 search interface.
+- Create/Import/Export: Manual data management (JSON/Markdown/Text).
+- Detail: Metadata inspector per memory.
+- Theme: Dark/Cyan (Toggle with 'd' key).
 
 ---
 
 ## CLI Commands (30+)
 
-nvc store <key> <content> [--tags t1,t2] [--title "..."] [--ns default]
-nvc get <key> [--ns default]
-nvc search <query> [--ns ...]
-nvc list [--ns ...] [--limit 50] [--offset 0]
-nvc delete <key> [-y]
-nvc versions <key>
-nvc restore <key> <version> [-y]
-nvc dashboard [--host] [--port 9999]
+CORE:
+$ nvc store <key> <content> [--tags t1] [--title "Text"] [--ns default]
+$ nvc get <key> [--ns default]
+$ nvc search <query> [--ns ...]
+$ nvc stats
+
+WORKFLOW:
+$ nvc checkpoint <namespace> "Feature X complete. Next: testing."
+
+IMPORT/EXPORT:
+$ nvc import-from obsidian /path/to/vault
+$ nvc import-from notion export.zip
+$ nvc import-from markdown /path/to/folder
+$ nvc export [output.json]
+
+OPERATIONS:
+$ nvc doctor       # System diagnostics
+$ nvc repair       # DB maintenance and optimization
+$ nvc backup       # Quick DB backup
+
+AUTOMATION:
+$ nvc install-hooks # Auto-capture shell commands (bash/zsh/ps)
+$ nvc watch /path   # Monitor files for changes
+$ nvc daemon start  # Background process management
 
 ---
 
-## Security
+## Architecture & Security
 
-* **API keys** — `secrets.token_hex(24)` with `nvc_` prefix (52 chars)
-* **Constant-time comparison** — `secrets.compare_digest` prevents timing attacks
-* **Auth required** for `remote-homelab` profile (Bearer token on every request)
-* **stdio transport** — implicit local trust, no auth needed
-* **Zero cloud, zero telemetry** — all data stays local
+FOLDER STRUCTURE:
+- core/        : Business logic (storage, auth, importers, doctor).
+- hooks/       : Shell/systemd integration scripts.
+- NVC-BaseUI/  : React 19 + TypeScript + Tailwind 4 + shadcn.
+- server.py    : MCP server entry point (stdio/sse).
 
----
+SECURITY:
+- API Keys: nvc_ prefix, constant-time comparison.
+- Auth: Required for remote-homelab (Bearer token).
+- local-first: Zero telemetry, zero cloud. Your data stays on-prem.
 
-## Storage Limits
+STORAGE LIMITS:
+- Key: 256 chars | Title: 512 chars | Content: 1 MB | Versions: 5.
 
-| Field | Max |
-| --- | --- |
-| Key | 256 chars |
-| Content | 1 MB |
-| Versions | 5 per key |
-| Search results | 50 per query |
-
----
-
-**NeuralVaultCore v1.0** — Cyber-Draco Legacy | built by [getobyte](https://github.com/getobyte)
+================================================================================
+NeuralVaultCore v1.0 — Cyber-Draco Legacy | built by getobyte
+================================================================================
