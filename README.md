@@ -153,13 +153,4 @@ nvc print-config [--client claude-code|cursor]
 
 ---
 
-## Migrating from ContextKeep
-
-If you're coming from ContextKeep, NeuralVaultCore includes a built-in migration tool:
-nvc migrate /path/to/contextkeep/data/memories/
-
-This imports all your ContextKeep JSON memory files into NeuralVaultCore's SQLite database with full metadata preservation.
-
----
-
 **NeuralVaultCore v1.0** — Cyber-Draco Legacy | built by getobyte
