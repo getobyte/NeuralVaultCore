@@ -1,4 +1,4 @@
-[![NeuralVaultCore](https://github.com/getobyte/NeuralVaultCore/blob/main/NVC-logo.png](https://github.com/getobyte/NeuralVaultCore)
+[![NeuralVaultCore](https://github.com/getobyte/NeuralVaultCore/blob/main/NVC-logo.png)](https://github.com/getobyte/NeuralVaultCore)
 
 # 🧠 NeuralVaultCore v1.0
 
