@@ -26,7 +26,7 @@ mcp_config.json
 
 # Node
 node_modules/
-NVC - BaseUI/node_modules/
+NVC-BaseUI/node_modules/
 webui-dist/
 
 # IDE
