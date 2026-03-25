@@ -1,3 +1,5 @@
+[![NeuralVaultCore](https://github.com/getobyte/NeuralVaultCore/blob/main/NVC-logo.png](https://github.com/getobyte/NeuralVaultCore)
+
 # 🧠 NeuralVaultCore v1.0
 
 > **Infinite Long-Term Memory for AI Agents** — local, private, low-token.
