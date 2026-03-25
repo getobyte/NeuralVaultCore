@@ -50,16 +50,108 @@ NeuralVaultCore with keys_only (~500 tokens):
   api-design | project:myapp
   ... (paginated, 20 at a time)
 
-**Resuming a project (the most common operation):**
+---
 
-Typical server: 2-3 separate tool calls (~2,100 tokens)
-  1. list_all_memories -> full directory
-  2. retrieve_memory("_state") -> full content
+## Installation
 
-NeuralVaultCore: 1 call (~400 tokens)
-  get_context("project:myapp") -> _state + recent keys in one response
+### Option 1: Installer Wizard (Recommended)
 
-**Estimated savings: ~7x fewer tokens per session.**
+$ git clone https://github.com/getobyte/NeuralVaultCore.git
+$ cd NeuralVaultCore
+$ python install.py
+
+The wizard will:
+1. Create a virtual environment
+2. Install all dependencies
+3. Download the semantic search model (~80MB)
+4. Ask you to choose a deployment profile
+5. Generate `.env` with a secure API key
+6. Initialize the SQLite database
+7. Build the web dashboard (if Node.js is available)
+8. Optionally install shell auto-capture hooks
+9. Generate `mcp_config.json` ready to paste into your IDE
+
+For CI/automation, skip all prompts:
+$ python install.py --yes
+
+### Option 2: Manual Setup
+
+$ git clone https://github.com/getobyte/NeuralVaultCore.git
+$ cd NeuralVaultCore
+
+# Create virtual environment
+$ python -m venv venv
+$ source venv/bin/activate  # Linux/macOS
+# venv\Scripts\activate     # Windows
+
+# Install dependencies
+$ pip install -e ".[full]"
+
+# Initialize
+$ nvc init
+
+# Get your MCP config
+$ nvc print-config --client claude-code
+
+### Option 3: Docker (Homelab / LAN Access)
+
+Use this when you want to run NVC on one machine (server, Raspberry Pi, homelab) and access it from other computers on your network.
+
+**Prerequisites:**
+- **Windows 11:** Install Docker Desktop with WSL 2 backend enabled.
+- **Linux:** Install Docker Engine + Docker Compose.
+- **macOS:** Install Docker Desktop.
+
+**Step 1 — Clone and configure:**
+$ git clone https://github.com/getobyte/NeuralVaultCore.git
+$ cd NeuralVaultCore
+$ cp .env.example .env
+
+**Step 2 — Generate an API key and edit `.env`:**
+$ python -c "import secrets; print('nvc_' + secrets.token_hex(24))"
+
+Open `.env` and set these three values:
+NVC_PROFILE=remote-homelab
+NVC_TRANSPORT=sse
+NVC_API_KEY=nvc_PASTE_YOUR_GENERATED_KEY_HERE
+
+**Step 3 — Start the containers:**
+$ docker compose up -d
+
+This starts two services:
+- **MCP Server** on port `9998` — your AI agents connect here
+- **Web Dashboard** on port `9999` — manage memories from a browser
+
+**Step 4 — Find the server's IP address:**
+# Linux: ip addr | grep "inet " | grep -v 127.0.0.1
+# Windows: ipconfig | findstr "IPv4"
+# macOS: ifconfig | grep "inet " | grep -v 127.0.0.1
+
+**Step 5 — Access the Web Dashboard:**
+Open a browser on any computer/phone on your network and go to:
+http://<YOUR_SERVER_IP>:9999
+
+---
+
+## 🔗 Connecting to Your IDE
+
+### Local Install (Options 1 & 2)
+Copy the generated `mcp_config.json` into your IDE or run:
+$ nvc print-config --client cursor
+$ nvc print-config --client claude-code
+
+### Remote/Docker (Option 3)
+Add this to your MCP config (e.g., `~/.claude.json`):
+{
+  "mcpServers": {
+    "neural-vault-core": {
+      "url": "http://<YOUR_SERVER_IP>:9998/sse",
+      "headers": {
+        "Authorization": "Bearer nvc_PASTE_YOUR_KEY_HERE"
+      }
+    }
+  }
+}
 
 ---
 
@@ -78,22 +170,10 @@ NeuralVaultCore: 1 call (~400 tokens)
 * **Full-text search** — SQLite FTS5 with ranked results, LIKE fallback
 * **Hybrid** — 3+ word queries trigger semantic search, shorter queries use FTS5
 
-### Web Dashboard
-* **8 views** — Dashboard, Memories, Calendar, Search, Create, Import, Export, Detail
-
----
-
-## Web Dashboard
-
-Start the dashboard:
-nvc dashboard
-# Open http://localhost:9999
-
 ---
 
 ## CLI Commands (30+)
 
-### Core
 nvc store <key> <content> [--tags t1,t2] [--title "..."] [--ns default]
 nvc get <key> [--ns default]
 nvc search <query> [--ns ...]
@@ -101,27 +181,7 @@ nvc list [--ns ...] [--limit 50] [--offset 0]
 nvc delete <key> [-y]
 nvc versions <key>
 nvc restore <key> <version> [-y]
-nvc namespaces
-nvc stats
-
-### Project Workflow
-nvc checkpoint <namespace> <content>
-# Example:
-nvc checkpoint project:myapp "Working on feature X. Next: test edge cases."
-
-### Import / Export
-nvc import-from obsidian /path/to/vault
-nvc import-from notion export.zip
-nvc import-from markdown /path/to/docs
-nvc import-from text notes.txt
-nvc import-from json data.json
-nvc export [output.json]
-nvc import input.json
-
-### Server & Dashboard
-nvc serve [--transport stdio|sse] [--host] [--port]
 nvc dashboard [--host] [--port 9999]
-nvc print-config [--client claude-code|cursor]
 
 ---
 
@@ -131,10 +191,6 @@ nvc print-config [--client claude-code|cursor]
 * **Constant-time comparison** — `secrets.compare_digest` prevents timing attacks
 * **Auth required** for `remote-homelab` profile (Bearer token on every request)
 * **stdio transport** — implicit local trust, no auth needed
-* **Parameterized SQL** — zero injection surface
-* **Input validation** — strict limits on key, title, content, tags length
-* **Path traversal protection** — SPA fallback validates all file paths
-* **Docker** — non-root user, no hardcoded credentials
 * **Zero cloud, zero telemetry** — all data stays local
 
 ---
@@ -144,12 +200,9 @@ nvc print-config [--client claude-code|cursor]
 | Field | Max |
 | --- | --- |
 | Key | 256 chars |
-| Title | 512 chars |
 | Content | 1 MB |
-| Tags | 1,024 chars |
 | Versions | 5 per key |
 | Search results | 50 per query |
-| Snippet | 250 chars |
 
 ---
 
