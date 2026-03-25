@@ -1,6 +1,6 @@
 <div align="center">
   <a href="https://github.com/getobyte/NeuralVaultCore">
-    <img src="https://github.com/getobyte/NeuralVaultCore/blob/main/NVC-logo.png" width="400"/>
+    <img src="https://github.com/getobyte/NeuralVaultCore/blob/main/NVC-logo.png" width="250"/>
   </a>
 </div>
 
