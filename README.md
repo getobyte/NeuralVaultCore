@@ -1,4 +1,8 @@
-[![NeuralVaultCore](https://github.com/getobyte/NeuralVaultCore/blob/main/NVC-logo.png)](https://github.com/getobyte/NeuralVaultCore)
+<div align="center">
+  <a href="https://github.com/getobyte/NeuralVaultCore">
+    <img src="https://github.com/getobyte/NeuralVaultCore/blob/main/NVC-logo.png" width="400"/>
+  </a>
+</div>
 
 # 🧠 NeuralVaultCore v1.0
 
