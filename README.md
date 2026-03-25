@@ -1,42 +1,42 @@
 <div align="center">
   <a href="https://github.com/getobyte/NeuralVaultCore">
-    <img src="https://github.com/getobyte/NeuralVaultCore/blob/main/NVC-logo.png" width="250"/>
+    <img src="https://github.com/getobyte/NeuralVaultCore/raw/main/NVC-logo.png" width="260"/>
   </a>
+
+# NeuralVaultCore v1.0
+
+**Infinite long-term memory for AI agents — local, private, low-token.**
+
+Any AI agent with MCP support gets persistent memory across sessions.  
+Single-user, local-first. Your data never leaves your machine.
+
+![Python](https://img.shields.io/badge/Python-3.10+-0D1117?style=flat-square&logo=python&logoColor=4488FF)
+![License](https://img.shields.io/badge/License-MIT-0D1117?style=flat-square&logo=opensourceinitiative&logoColor=4CAF50)
+![MCP](https://img.shields.io/badge/MCP-Compliant-0D1117?style=flat-square&logo=anthropic&logoColor=9F7AEA)
+
 </div>
-
-# 🧠 NeuralVaultCore v1.0
-
-> **Infinite Long-Term Memory for AI Agents** — local, private, low-token.
-
-NeuralVaultCore is an MCP memory server built for **token efficiency**. Any AI agent with MCP support (Claude Code, Cursor, OpenCode, Ollama) gets persistent memory across sessions. Single-user, local-first — your data never leaves your machine.
-
-![Python](https://img.shields.io/badge/Python-3.10+-blue?style=flat-square&logo=python)
-![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
-![MCP](https://img.shields.io/badge/MCP-Compliant-purple?style=flat-square)
 
 ---
 
-## 🤖 Official AI Agent Skills (Ecosystem)
+## 🤖 Ecosystem
 
-An MCP server is only as good as the AI using it. To get the absolute best performance, zero context bloat, and perfect autonomy, use these companion prompts:
+NeuralVaultCore is one piece of a 3-part system. The server alone is not enough — pair it with the right prompts:
 
-| Skill | Description | Tokens |
-|-------|-------------|--------|
-| ⚡ [**NeuralVaultSkill**](https://github.com/getobyte/NeuralVaultSkill) | The "Daily Driver" — teaches agents to save context autonomously and use token-saving tools | ~383 |
-| 🧹 [**NeuralVaultArchivist**](https://github.com/getobyte/NeuralVaultArchivist) | The "Maintenance Tool" — merges overlapping memories into Master Records without deleting data | on-demand |
+| Skill | Role | Tokens |
+|-------|------|--------|
+| ⚡ [**NeuralVaultSkill**](https://github.com/getobyte/NeuralVaultSkill) | Daily driver — autonomous background memory management | ~383 |
+| 🧹 [**NeuralVaultArchivist**](https://github.com/getobyte/NeuralVaultArchivist) | Maintenance — merges overlapping memories into master records without deleting data | on-demand |
 
 ---
 
 ## 💡 Why Low-Token Matters
 
-Typical MCP servers waste thousands of tokens on emojis and full content dumps.  
-**NeuralVaultCore reduces overhead by up to 7×** using smart truncation and pipe-delimited ASCII output.
+Most MCP servers waste thousands of tokens on verbose output.  
+NeuralVaultCore cuts overhead by up to **7×** using smart truncation and pipe-delimited ASCII responses.
 
 ---
 
 ## 🚀 Installation
-
-Choose the setup method that fits your workflow:
 
 ### Option 1 — Installer Wizard *(Recommended)*
 
@@ -46,7 +46,7 @@ cd NeuralVaultCore
 python install.py
 ```
 
-> The wizard handles venv, dependencies, search model, and MCP config automatically.
+The wizard handles venv, dependencies, search model, and MCP config automatically.
 
 ---
 
@@ -57,9 +57,8 @@ git clone https://github.com/getobyte/NeuralVaultCore.git
 cd NeuralVaultCore
 python -m venv venv
 
-# Activate the virtual environment:
-source venv/bin/activate       # Linux / macOS
-venv\Scripts\activate          # Windows
+source venv/bin/activate    # Linux / macOS
+venv\Scripts\activate       # Windows
 
 pip install -e ".[full]"
 nvc init
@@ -68,52 +67,45 @@ nvc print-config --client claude-code
 
 ---
 
-### Option 3 — Docker *(Homelab / LAN Access)*
+### Option 3 — Docker *(LAN / Homelab)*
 
-**Step 1** — Clone and configure:
 ```bash
 git clone https://github.com/getobyte/NeuralVaultCore.git
 cd NeuralVaultCore
 cp .env.example .env
 ```
 
-**Step 2** — Generate an API key and paste it in `.env` at `NVC_API_KEY`:
+Generate an API key and paste it into `.env` at `NVC_API_KEY`:
 ```bash
 python -c "import secrets; print('nvc_' + secrets.token_hex(24))"
 ```
 
-**Step 3** — Start the containers:
+Start the containers:
 ```bash
 docker compose up -d
 ```
 
-**Step 4** — Find the server's IP address:
+Find your server IP:
 ```bash
-# Linux
-ip addr | grep "inet " | grep -v 127.0.0.1
-
-# Windows
-ipconfig | findstr "IPv4"
-
-# macOS
-ifconfig | grep "inet " | grep -v 127.0.0.1
+ip addr | grep "inet " | grep -v 127.0.0.1   # Linux
+ipconfig | findstr "IPv4"                      # Windows
+ifconfig | grep "inet " | grep -v 127.0.0.1   # macOS
 ```
 
 ---
 
 ## 🔗 Connecting to Your IDE
 
-### Local Setup (Options 1 & 2)
+### Local (Options 1 & 2)
 
-Generate your config automatically:
 ```bash
 nvc print-config --client cursor
 nvc print-config --client claude-code
 ```
 
-### Remote / Docker Setup (Option 3)
+### Remote / Docker (Option 3)
 
-Add this to your MCP config (e.g., `~/.claude.json`):
+Add to your MCP config (e.g. `~/.claude.json`):
 
 ```json
 {
@@ -130,33 +122,24 @@ Add this to your MCP config (e.g., `~/.claude.json`):
 
 ---
 
-## 🛠️ CLI Commands Reference
-
-### Core
+## 🛠️ CLI Reference
 
 ```bash
+# Core
 nvc store <key> <content> [--tags t1,t2] [--ns default]
 nvc get <key> [--ns default]
 nvc search <query> [--ns ...]
 nvc list [--limit 50] [--keys_only]
 nvc stats
-```
 
-### Workflow
-
-```bash
+# Workflow
 nvc checkpoint <namespace> <content>
+# nvc checkpoint project:myapp "Finished auth refactor."
 
-# Example:
-nvc checkpoint project:myapp "Finished auth refactor."
-```
-
-### Maintenance
-
-```bash
+# Maintenance
 nvc doctor      # Diagnostic checks
 nvc repair      # DB maintenance
-nvc dashboard   # Launch Web UI → http://localhost:9999
+nvc dashboard   # Web UI → http://localhost:9999
 ```
 
 ---
@@ -165,10 +148,10 @@ nvc dashboard   # Launch Web UI → http://localhost:9999
 
 ```
 NeuralVaultCore/
-├── core/         # Business logic (storage, auth, importers, doctor)
-├── hooks/        # Shell / systemd integration scripts
+├── core/         # Storage, auth, importers, doctor
+├── hooks/        # Shell / systemd integration
 ├── NVC-BaseUI/   # React 19 + TypeScript + Tailwind 4 + shadcn
-└── server.py     # MCP server entry point (stdio / sse)
+└── server.py     # MCP entry point (stdio / sse)
 ```
 
 ---
@@ -178,15 +161,17 @@ NeuralVaultCore/
 | Area | Details |
 |------|---------|
 | **API Keys** | `nvc_` prefix, constant-time comparison |
-| **Auth** | Bearer token required for remote/homelab setups |
-| **Privacy** | Zero telemetry, zero cloud — fully local-first |
+| **Auth** | Bearer token required for remote setups |
+| **Privacy** | Zero telemetry, zero cloud, fully local |
 
 ---
 
 ## 📦 Storage Limits
 
-| Field | Limit |
-|-------|-------|
+These limits apply **per record** — total database size is only limited by your local disk space.
+
+| Field | Per-record limit |
+|-------|-----------------|
 | Key | 256 chars |
 | Title | 512 chars |
 | Content | 1 MB |
@@ -197,6 +182,6 @@ NeuralVaultCore/
 <div align="center">
 
 **NeuralVaultCore v1.0** — Cyber-Draco Legacy  
-Built with ❤️ by [getobyte](https://github.com/getobyte)
+Built by [getobyte](https://github.com/getobyte) · Romania 🇷🇴
 
 </div>
