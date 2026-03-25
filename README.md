@@ -153,4 +153,4 @@ nvc print-config [--client claude-code|cursor]
 
 ---
 
-**NeuralVaultCore v1.0** — Cyber-Draco Legacy | built by getobyte
+**NeuralVaultCore v1.0** — Cyber-Draco Legacy | built by [getobyte](https://github.com/getobyte)
