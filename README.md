@@ -32,6 +32,12 @@ NeuralVaultCore is the foundation. Build on top of it with the full NeuralVault 
 
 ---
 
+> **⚠️ Prerequisites**  
+> NeuralVaultCore is the memory server — but without a skill prompt, your agent won't know how to use it efficiently.  
+> At minimum, install **[NeuralVaultSkill](https://github.com/getobyte/NeuralVaultSkill)** alongside this server.
+
+---
+
 ## 💡 Why Low-Token Matters
 
 Most MCP servers waste thousands of tokens on verbose output.  
