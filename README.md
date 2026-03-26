@@ -18,14 +18,17 @@ Single-user, local-first. Your data never leaves your machine.
 
 ---
 
-## 🤖 Ecosystem
+## 🌐 Ecosystem
 
-NeuralVaultCore is one piece of a 3-part system. The server alone is not enough — pair it with the right prompts:
+NeuralVaultCore is the foundation. Build on top of it with the full NeuralVault stack:
 
-| Skill | Role | Tokens |
-|-------|------|--------|
-| ⚡ [**NeuralVaultSkill**](https://github.com/getobyte/NeuralVaultSkill) | Daily driver — autonomous background memory management | ~383 |
-| 🧹 [**NeuralVaultArchivist**](https://github.com/getobyte/NeuralVaultArchivist) | Maintenance — merges overlapping memories into master records without deleting data | on-demand |
+| Component | Role |
+|-----------|------|
+| 🧠 **NeuralVaultCore** *(you are here)* | MCP memory server — the brain |
+| ⚡ [**NeuralVaultSkill**](https://github.com/getobyte/NeuralVaultSkill) | Session memory automation — `/nvc:init` + `/nvc:end` |
+| 🧹 [**NeuralVaultArchivist**](https://github.com/getobyte/NeuralVaultArchivist) | Memory consolidation — on-demand cleanup |
+| 🛠️ [**NeuralSkillBuilder**](https://github.com/getobyte/NeuralSkillBuilder) | Skill builder — design, scaffold and audit Claude Code skills |
+| 🔄 [**NeuralVaultFlow**](https://github.com/getobyte/NeuralVaultFlow) | Dev workflow — brainstorm, plan, execute, audit, deploy |
 
 ---
 
